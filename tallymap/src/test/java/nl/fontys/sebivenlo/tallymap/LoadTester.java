@@ -12,7 +12,7 @@
  */
 package nl.fontys.sebivenlo.tallymap;
 
-import nl.fontys.sebivenlo.tallymap.TallyIncrementer;
+import nl.fontys.sebivenlo.tallymap.LoadTesterApp.TallyIncrementer;
 import nl.fontys.sebivenlo.tallymap.IncrementerResult;
 import nl.fontys.sebivenlo.tallymap.TallyMap;
 import java.util.List;
@@ -45,7 +45,7 @@ class LoadTester<U> implements Runnable {
     }
 
     LoadTester( Runnable work, TallyMap<U> map2, TallyMap<U> map1,
-                List<U> keys1 ) {
+            List<U> keys1 ) {
         this( map2, map1, keys1 );
         this.work = work;
     }
@@ -76,18 +76,18 @@ class LoadTester<U> implements Runnable {
                 = new ExecutorCompletionService<>( executor );
         long before = System.currentTimeMillis();
         for ( int i = 0; i < tasks;
-              i += 3 ) {
+                i += 3 ) {
             System.out.println( "Sumbit task " + i );
             ecs.submit( new TallyIncrementer<>( work, map1, keys1,
-                                                new int[]{ 1, 2, 3 }, rounds ) );
+                    new int[]{ 1, 2, 3 }, rounds ) );
             ecs.submit( new TallyIncrementer<>( work, map1, keys1,
-                                                new int[]{ 3, 1, 2 }, rounds ) );
+                    new int[]{ 3, 1, 2 }, rounds ) );
             ecs.submit( new TallyIncrementer<>( work, map1, keys1,
-                                                new int[]{ 2, 3, 1 }, rounds ) );
+                    new int[]{ 2, 3, 1 }, rounds ) );
         }
         long expectedTotals = 0;
         for ( int i = 0; i < tasks;
-              i++ ) {
+                i++ ) {
             try {
                 Future<IncrementerResult> fut = ecs.take();
                 IncrementerResult taskResult = fut.get();
@@ -109,7 +109,7 @@ class LoadTester<U> implements Runnable {
                 * rounds + " (tasks*rounds) in " + ( after - before )
                 + " milli seconds for " + work.toString() );
         Assert.assertTrue( "expected equal maps" + map1,
-                           map2.snapShotEquals( map1 ) );
+                map2.snapShotEquals( map1 ) );
         System.out.println( "Load Test completed succesfully" );
     }
 

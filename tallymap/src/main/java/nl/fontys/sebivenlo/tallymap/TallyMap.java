@@ -101,8 +101,7 @@ public interface TallyMap<K> {
      * @param k the key
      */
     /**
-     * Increment a counter by key. Trying to add to a non existing counter will
-     * loose the increment.
+     * Increment a counter by key. 
      *
      * @param k the key
      */
@@ -111,8 +110,7 @@ public interface TallyMap<K> {
     }
 
     /**
-     * Decrement a counter by key. Trying to add to a non existing counter will
-     * loose the increment.
+     * Decrement a counter by key. 
      *
      * @param k the key
      */
@@ -336,4 +334,6 @@ public interface TallyMap<K> {
     default long get( K k ) {
         return getTallyForKey( k );
     }
+    
+    
 }

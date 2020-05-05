@@ -16,6 +16,7 @@ import nl.fontys.sebivenlo.tallymap.TallyMap3;
 import nl.fontys.sebivenlo.tallymap.TallyMap;
 import java.util.Collection;
 import java.util.Map;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 /**
@@ -56,6 +57,12 @@ public class TallyMap3Test extends TallyMapStringTestBase {
 
     // supperess test
     public void unmappedAddsKey() {
+    }
+
+    @Test
+    public void defaultCtorEmpty() {
+        TallyMap<String> map = new TallyMap3<>();
+        assertEquals( 0L, map.grandTotal() );
     }
 
 }

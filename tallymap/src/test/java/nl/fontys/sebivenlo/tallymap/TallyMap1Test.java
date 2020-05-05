@@ -53,4 +53,10 @@ public class TallyMap1Test extends TallyMapStringTestBase {
         assertEquals( 7L, map1.getTallyForKey( "Z" ) );
     }
 
+    @Test
+    public void defaultCtorEmpty() {
+        TallyMap<String> map = new TallyMap1<>();
+        assertEquals( 0L, map.grandTotal() );
+    }
+
 }

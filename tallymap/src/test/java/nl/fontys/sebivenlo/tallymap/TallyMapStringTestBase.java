@@ -24,12 +24,12 @@ import org.junit.Test;
 abstract class TallyMapStringTestBase extends TallyMapTestBase<String> {
 
     String[] testVAK = new String[]{ "A", "B",
-                                     "C", "D",
-                                     "E",
-                                     "F",
-                                     "G", "H",
-                                     "I", "J",
-                                     "K" };
+        "C", "D",
+        "E",
+        "F",
+        "G", "H",
+        "I", "J",
+        "K" };
 
     @Override
     protected String getTestValue( int i ) {
@@ -39,10 +39,10 @@ abstract class TallyMapStringTestBase extends TallyMapTestBase<String> {
     @Override
     protected List<String> testSet1() {
         return Arrays.asList( new String[]{ "A", "B",
-                                            "C", "D",
-                                            "E",
-                                            "F",
-                                            "G", "H" } );
+            "C", "D",
+            "E",
+            "F",
+            "G", "H" } );
     }
 
     @Override

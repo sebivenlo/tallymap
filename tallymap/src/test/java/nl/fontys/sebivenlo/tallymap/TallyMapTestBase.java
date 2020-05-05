@@ -28,9 +28,9 @@ import org.junit.Test;
  * @param <T>
  */
 public abstract class TallyMapTestBase<T> {
-    
+
     protected abstract TallyMap<T> createFromMap( Map<T, String> hm );
-    
+
     protected abstract TallyMap<T> createInstance( Collection<T> keys );
 
     /**
@@ -41,19 +41,19 @@ public abstract class TallyMapTestBase<T> {
      * @return a test value.
      */
     protected abstract T getTestValue( int i );
-    
+
     protected abstract List<T> testSet1();
-    
+
     protected abstract List<T> testSet2();
-    
+
     protected TallyMap<T> map1;
     protected TallyMap<T> map2;
     protected List<T> keys1;
     protected List<T> keys2;
-    
+
     public TallyMapTestBase() {
     }
-    
+
     @Before
     public void setUp() {
         keys1 = testSet1();
@@ -61,7 +61,7 @@ public abstract class TallyMapTestBase<T> {
         map1 = createInstance( keys1 );
         map2 = createInstance( keys1 );
     }
-    
+
     @After
     public void tearDown() {
         map1 = null;
@@ -74,7 +74,7 @@ public abstract class TallyMapTestBase<T> {
     @Test
     public void testSetupCounter() {
         System.out.println( "setupCounter" );
-        
+
         for ( T k : keys1 ) {
             assertEquals( 0, map1.getTallyForKey( k ) );
         }
@@ -101,7 +101,7 @@ public abstract class TallyMapTestBase<T> {
         T b = getTestValue( 1 );
         map1.incrementForKey( b );
         map1.incrementForKey( b );
-        
+
         long expResult = 2;
         long result = map1.getTallyForKey( b );
         assertEquals( expResult, result );
@@ -145,14 +145,14 @@ public abstract class TallyMapTestBase<T> {
         boolean expResult = false;
         assertFalse( map1.snapShotEquals( other ) );
         assertFalse( other.snapShotEquals( map1 ) );
-        
+
         other = map2;
         assertTrue( map1.snapShotEquals( other ) );
         T a = getTestValue( 0 );
-        
+
         other.incrementForKey( a );
         assertFalse( map1.snapShotEquals( other ) );
-        
+
         map1.incrementForKey( a );
         assertTrue( map1.snapShotEquals( other ) );
 
@@ -161,7 +161,7 @@ public abstract class TallyMapTestBase<T> {
         Map<T, Long> map4 = map3;
         assertTrue( map2.snapShotEquals( map2 ) );
     }
-    
+
     @Test
     public void testAddCountByKey() {
         System.out.println( "getTallyByKey" );
@@ -177,16 +177,16 @@ public abstract class TallyMapTestBase<T> {
         T a = getTestValue( 0 );
         result = map1.getTallyForKey( a );
         assertEquals( expResult, result );
-        
+
     }
-    
+
     @Test
     public void testDecrement() {
         map1.decrementForKey( getTestValue( 0 ) );
         assertEquals( "negative values allowed", -1, map1.getTallyForKey(
-                      getTestValue( 0 ) ) );
+                getTestValue( 0 ) ) );
     }
-    
+
     @Test
     public void testSnapShots() {
         map1.snapShot();
@@ -196,12 +196,12 @@ public abstract class TallyMapTestBase<T> {
         map1.snapShot();
         map2.incrementForKey( a );
         assertEquals( map1.getSnapShots().get( 1 ), map2.takeSnapShot() );
-        
+
     }
-    
+
     @Test
     public void testDiff() {
-        
+
         assertEquals( "equal maps ", 0, map2.snapShotDiff( map1 ).length() );
         T a = getTestValue( 0 );
         T b = getTestValue( 1 );
@@ -216,9 +216,9 @@ public abstract class TallyMapTestBase<T> {
         map2.addTallyForKey( a, 2 );
         System.out.println( "diff map2 and map1:" + map2.snapShotDiff( map1 ) );
         assertFalse( "other map22 ", 0 == map2.snapShotDiff( map1 ).length() );
-        
+
     }
-    
+
     @Test
     public void fromMap() {
         HashMap<T, String> hm = new HashMap<>();
@@ -226,15 +226,15 @@ public abstract class TallyMapTestBase<T> {
             hm.put( k, k.toString() );
         }
         T a = getTestValue( 0 );
-        
+
         TallyMap<T> tm1 = createFromMap( hm );
         TallyMap<T> tm2 = createInstance( tm1.keySet() );
         tm1.incrementForKey( a );
         tm2.incrementForKey( a );
         assertTrue( "maps tm1 and tm2 should be equal", tm1
-                    .snapShotEquals( tm2 ) );
+                .snapShotEquals( tm2 ) );
     }
-    
+
     @Test
     public void testUnderLoad() {
         new LoadTester<>( LoadTester.yielder, map2, map1, keys1 ).withRounds(
@@ -242,13 +242,13 @@ public abstract class TallyMapTestBase<T> {
         new LoadTester<>( LoadTester.lazyBones, map2, map1, keys1 ).run();
         new LoadTester<>( LoadTester.sleepyCat, map2, map1, keys1 ).run();
     }
-    
+
     @Test
     public void testClearAll() {
         T a = getTestValue( 0 );
         T b = getTestValue( 1 );
         T c = getTestValue( 2 );
-        T[] testA = ( T[] ) new Object[ 3 ];
+        T[] testA = (T[]) new Object[ 3 ];
         testA[ 0 ] = a;
         testA[ 1 ] = b;
         testA[ 2 ] = c;
@@ -258,13 +258,13 @@ public abstract class TallyMapTestBase<T> {
         for ( T s : testA ) {
             assertFalse( 0L == map2.getTallyForKey( s ) );
         }
-        
+
         map2.clearAll();
         for ( T s : testA ) {
             assertTrue( 0L == map2.getTallyForKey( s ) );
         }
     }
-    
+
     @Test
     public void testGrandTotal() {
         T a = getTestValue( 0 );
@@ -275,12 +275,12 @@ public abstract class TallyMapTestBase<T> {
         map2.addTallyForKey( c, 3 );
         assertEquals( 7L, map2.grandTotal() );
     }
-    
+
     @Test
     public void testUnknownKeyValue() {
         assertEquals( 0L, map2.getTallyForKey( getTestValue( 6 ) ) );
     }
-    
+
     @Test
     public void testAddKey() {
         T z = getTestValue( 7 );
@@ -290,5 +290,5 @@ public abstract class TallyMapTestBase<T> {
         map2.addTallyForKey( z, 6 );
         assertEquals( 6L, map2.getTallyForKey( z ) );
     }
-    
+
 }

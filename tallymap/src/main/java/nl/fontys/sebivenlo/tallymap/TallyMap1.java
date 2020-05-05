@@ -67,7 +67,7 @@ public class TallyMap1<K> implements TallyMap<K> {
      *
      * @param map to provide keySet
      */
-    public TallyMap1( Map map ) {
+    public TallyMap1( Map<K,?> map ) {
         this( map.keySet() );
     }
 
@@ -77,7 +77,7 @@ public class TallyMap1<K> implements TallyMap<K> {
      *
      * @param tm map with keys for this map
      */
-    public TallyMap1( TallyMap tm ) {
+    public TallyMap1( TallyMap<K> tm ) {
         this( tm.keySet() );
     }
 

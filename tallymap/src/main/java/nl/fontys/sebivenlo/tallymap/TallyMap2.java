@@ -186,4 +186,5 @@ public class TallyMap2<K> implements TallyMap<K> {
     public long grandTotal() {
         return map.reduceValuesToLong( 1L, LongAdder::sum, 0L, Long::sum );
     }
+    
 }
