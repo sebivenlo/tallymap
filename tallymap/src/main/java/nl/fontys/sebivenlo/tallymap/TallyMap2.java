@@ -145,11 +145,6 @@ public class TallyMap2<K> implements TallyMap<K> {
         return map.keySet();
     }
 
-    /**
-     * Take a snapshot.
-     *
-     * @return
-     */
     private List<Map<K, Long>> snapList
                                        = new CopyOnWriteArrayList<Map<K, Long>>();
 

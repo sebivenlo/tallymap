@@ -14,7 +14,6 @@ package nl.fontys.sebivenlo.tallymap;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -46,9 +45,9 @@ public class TallyMap1<K> implements TallyMap<K> {
     public TallyMap1( Collection<K> keySet ) {
         map = new ConcurrentHashMap<>( keySet.size() );
 
-        for ( K k : keySet ) {
+        keySet.forEach( k -> {
             map.put( k, new AtomicLong( 0 ) );
-        }
+        } );
     }
 
     /**
@@ -151,11 +150,6 @@ public class TallyMap1<K> implements TallyMap<K> {
         return map.keySet();
     }
 
-    /**
-     * Take a snapshot.
-     *
-     * @return
-     */
     private List<Map<K, Long>> snapList
             = new CopyOnWriteArrayList<>();
 

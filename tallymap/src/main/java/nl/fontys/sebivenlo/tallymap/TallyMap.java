@@ -14,19 +14,22 @@ package nl.fontys.sebivenlo.tallymap;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Tally map is a Thread safe concurrent map to count (tally) things. The Key
  * can be of any type suitable as a key in a Map.
  * <p>
- * TallyMap has a snapshot facility, which takes a copy of the accumulated
- * count and saves it as a unmodifiable map.
+ * TallyMap has a snapshot facility, which takes a copy of the accumulated count
+ * and saves it as a unmodifiable map.
  * <p>
  * Typical usage is in tests.
  *
@@ -50,7 +53,7 @@ public interface TallyMap<K> {
      * Trying to add to a non existing counter will add the counter and set it
      * to delta.
      *
-     * @param k     key in the map
+     * @param k key in the map
      * @param delta amount to add
      */
     void addTallyForKey( K k, long delta );
@@ -58,12 +61,12 @@ public interface TallyMap<K> {
     /**
      * Clear all counters.
      * <p>
-     * This map iterates (concurrently) over all keys and
-     * set the associated counters to 0. There is no guarantee that all counters
-     * are 0 at any same moment, unless no updates of the counters occur while
-     * this clearing takes place. The user is advised to use this method between
-     * tests or create a new map for a new test. Postcondition: all counters in
-     * the map have been set to 0.
+     * This map iterates (concurrently) over all keys and set the associated
+     * counters to 0. There is no guarantee that all counters are 0 at any same
+     * moment, unless no updates of the counters occur while this clearing takes
+     * place. The user is advised to use this method between tests or create a
+     * new map for a new test. Postcondition: all counters in the map have been
+     * set to 0.
      */
     void clearAll();
 
@@ -138,47 +141,115 @@ public interface TallyMap<K> {
 
         StringBuilder result = new StringBuilder();
 
-        // take the snapshots.
-        Map<K, Long> mySnapShot = takeSnapShot();
-        Map<K, Long> otherSnapShot = other.takeSnapShot();
-        Set<K> leftDiffSet = new TreeSet<>( mySnapShot.keySet() );
-        Set<K> rightDiffSet = new TreeSet<>( otherSnapShot.keySet() );
-        leftDiffSet.removeAll( otherSnapShot.keySet() );
-        rightDiffSet.removeAll( mySnapShot.keySet() );
+        Map<DiffType, Map<K, Long>> diffMap = diffMap( other );
 
-        leftDiffSet.stream().forEach( ( k ) -> {
-            result.append( "\n\tthis  " )
-                    .append( k.toString() )
-                    .append( " => " )
-                    .append( mySnapShot.get( k ) )
-                    .append( ", other missing" );
-        } );
-        rightDiffSet.stream().forEach( ( k ) -> {
-            result.append( "\n\tother " )
-                    .append( k.toString() )
-                    .append( " => " )
-                    .append( otherSnapShot.get( k ) )
-                    .append( ", this missing" );
-        } );
-        // now compare values but only for keys that are available in
-        // both maps
+        if ( diffMap.containsKey(DiffType.DELETE_KEY ) ) {
+            diffMap.get(DiffType.DELETE_KEY )
+                    .entrySet()
+                    .stream()
+                    .forEach( e -> {
+                        result.append( "\n\tthis  " )
+                                .append( e.getKey().toString() )
+                                .append( " => " )
+                                .append( e.getValue() )
+                                .append( ", other missing" );
+
+                    } );
+        }
+
+        if ( diffMap.containsKey(DiffType.ADD_KEY ) ) {
+            diffMap.get(DiffType.ADD_KEY )
+                    .entrySet()
+                    .stream()
+                    .forEach( e -> {
+                        result.append( "\n\tother " )
+                                .append( e.getKey().toString() )
+                                .append( " => " )
+                                .append( e.getValue() )
+                                .append( ", this missing" );
+
+                    } );
+        }
+
+        if ( diffMap.containsKey(DiffType.UPDATE_KEY ) ) {
+            diffMap.get(DiffType.UPDATE_KEY )
+                    .entrySet()
+                    .stream()
+                    .forEach( e -> {
+                        result.append( "\n\tother differs for key " )
+                                .append( e.getKey() )
+                                .append( " by " )
+                                .append( e.getValue() );
+                    } );
+        }
+
+        return result.toString();
+    }
+
+    private Map<K, Long> updateMap( Map<K, Long> otherSnapShot, Map<K, Long> mySnapShot ) {
         Set<K> minSet = new TreeSet<>( mySnapShot.keySet() );
         minSet.retainAll( otherSnapShot.keySet() );
-        minSet.stream().forEach( ( k ) -> {
-            long leftValue = mySnapShot.get( k );
-            long rightValue = otherSnapShot.get( k );
-            if ( leftValue != rightValue ) {
-                result.append( "\n\tthis  " )
-                        .append( k.toString() )
-                        .append( " => " )
-                        .append( leftValue )
-                        .append( ", other " )
-                        .append( k.toString() )
-                        .append( " => " )
-                        .append( rightValue );
-            }
-        } );
-        return result.toString();
+        Map<K, Long> updateMap = minSet.stream()
+                .filter( k -> otherSnapShot.get( k ) - mySnapShot.get( k ) !=0)
+                .collect( toMap( k -> k, k -> otherSnapShot.get( k ) - mySnapShot.get( k ) ) );
+        return updateMap;
+    }
+
+    /**
+     * Difference types, for add key (and value != 0), delete key (and value !=0) and  
+     * update value (difference computed by other.value-this.value.
+     * 
+     */
+    public enum DiffType {
+        ADD_KEY, DELETE_KEY, UPDATE_KEY
+    }
+
+    /**
+     * Get the difference between this and other map as map with add key, delete key and update value entries.
+     * The returned map indicates what should be done to make this map equal to the other.
+     * @param other map
+     * @return the difference map
+     */
+    default Map<DiffType, Map<K, Long>> diffMap( TallyMap<K> other ) {
+        Map<K, Long> mySnapShot = takeSnapShot();
+        Map<K, Long> otherSnapShot = other.takeSnapShot();
+        if ( mySnapShot.equals( otherSnapShot ) ) {
+            return Map.of();
+        }
+
+        Map<DiffType, Map<K, Long>> result = new EnumMap<>( DiffType.class );
+        Map<K, Long> addMap = diffMap( otherSnapShot, mySnapShot );
+        if ( !addMap.isEmpty() ) {
+            result.put(DiffType.ADD_KEY, addMap );
+        }
+        Map<K, Long> deleteMap = diffMap( mySnapShot, otherSnapShot );
+        if ( !deleteMap.isEmpty() ) {
+            result.put(DiffType.DELETE_KEY, deleteMap );
+        }
+        Map<K, Long> updateMap = updateMap( otherSnapShot, mySnapShot );
+        if ( !updateMap.isEmpty() ) {
+            result.put(DiffType.UPDATE_KEY, updateMap );
+        }
+        return result;
+    }
+
+    private Map<K, Long> diffMap( Map<K, Long> mySnapShot, Map<K, Long> otherSnapShot ) {
+        Set<K> leftDiffSet = keyDifference( mySnapShot, otherSnapShot );
+        Map<K, Long> leftDiffMap = leftDiffSet.stream().collect( toMap( k -> k, k -> mySnapShot.get( k ) ) );
+        return leftDiffMap;
+    }
+
+    /**
+     * Set containing keys that occur in left map but not in right.
+     *
+     * @param leftMap first input
+     * @param rightMap second input
+     * @return the difference of the key sets
+     */
+    private Set<K> keyDifference( Map<K, Long> leftMap, Map<K, Long> rightMap ) {
+        Set<K> result = new TreeSet<>( leftMap.keySet() );
+        result.removeAll( rightMap.keySet() );
+        return result;
     }
 
     /**
