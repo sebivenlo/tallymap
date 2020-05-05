@@ -143,8 +143,8 @@ public interface TallyMap<K> {
 
         Map<DiffType, Map<K, Long>> diffMap = diffMap( other );
 
-        if ( diffMap.containsKey(DiffType.DELETE_KEY ) ) {
-            diffMap.get(DiffType.DELETE_KEY )
+        if ( diffMap.containsKey( DiffType.DELETE_KEY ) ) {
+            diffMap.get( DiffType.DELETE_KEY )
                     .entrySet()
                     .stream()
                     .forEach( e -> {
@@ -157,8 +157,8 @@ public interface TallyMap<K> {
                     } );
         }
 
-        if ( diffMap.containsKey(DiffType.ADD_KEY ) ) {
-            diffMap.get(DiffType.ADD_KEY )
+        if ( diffMap.containsKey( DiffType.ADD_KEY ) ) {
+            diffMap.get( DiffType.ADD_KEY )
                     .entrySet()
                     .stream()
                     .forEach( e -> {
@@ -171,8 +171,8 @@ public interface TallyMap<K> {
                     } );
         }
 
-        if ( diffMap.containsKey(DiffType.UPDATE_KEY ) ) {
-            diffMap.get(DiffType.UPDATE_KEY )
+        if ( diffMap.containsKey( DiffType.UPDATE_KEY ) ) {
+            diffMap.get( DiffType.UPDATE_KEY )
                     .entrySet()
                     .stream()
                     .forEach( e -> {
@@ -190,23 +190,25 @@ public interface TallyMap<K> {
         Set<K> minSet = new TreeSet<>( mySnapShot.keySet() );
         minSet.retainAll( otherSnapShot.keySet() );
         Map<K, Long> updateMap = minSet.stream()
-                .filter( k -> otherSnapShot.get( k ) - mySnapShot.get( k ) !=0)
+                .filter( k -> otherSnapShot.get( k ) - mySnapShot.get( k ) != 0 )
                 .collect( toMap( k -> k, k -> otherSnapShot.get( k ) - mySnapShot.get( k ) ) );
         return updateMap;
     }
 
     /**
-     * Difference types, for add key (and value != 0), delete key (and value !=0) and  
-     * update value (difference computed by other.value-this.value.
-     * 
+     * Difference types, for add key (and value != 0), delete key (and value
+     * !=0) and update value (difference computed by other.value-this.value.
+     *
      */
     public enum DiffType {
         ADD_KEY, DELETE_KEY, UPDATE_KEY
     }
 
     /**
-     * Get the difference between this and other map as map with add key, delete key and update value entries.
-     * The returned map indicates what should be done to make this map equal to the other.
+     * Get the difference between this and other map as map with add key, delete
+     * key and update value entries. The returned map indicates what should be
+     * done to make this map equal to the other.
+     *
      * @param other map
      * @return the difference map
      */
@@ -220,15 +222,15 @@ public interface TallyMap<K> {
         Map<DiffType, Map<K, Long>> result = new EnumMap<>( DiffType.class );
         Map<K, Long> addMap = diffMap( otherSnapShot, mySnapShot );
         if ( !addMap.isEmpty() ) {
-            result.put(DiffType.ADD_KEY, addMap );
+            result.put( DiffType.ADD_KEY, addMap );
         }
         Map<K, Long> deleteMap = diffMap( mySnapShot, otherSnapShot );
         if ( !deleteMap.isEmpty() ) {
-            result.put(DiffType.DELETE_KEY, deleteMap );
+            result.put( DiffType.DELETE_KEY, deleteMap );
         }
         Map<K, Long> updateMap = updateMap( otherSnapShot, mySnapShot );
         if ( !updateMap.isEmpty() ) {
-            result.put(DiffType.UPDATE_KEY, updateMap );
+            result.put( DiffType.UPDATE_KEY, updateMap );
         }
         return result;
     }
@@ -271,27 +273,7 @@ public interface TallyMap<K> {
         // take the snapshots.
         Map<K, Long> mySnapshot = takeSnapShot();
         Map<K, Long> otherSnapShot = other.takeSnapShot();
-
-        // test keyset equality.
-        Set<K> myKeySet = mySnapshot.keySet();
-        Set<K> otherKeySet = otherSnapShot.keySet();
-
-        // does this contain all others keys?
-        if ( !myKeySet.containsAll( otherKeySet ) ) {
-            return false;
-        }
-
-        // does other contain all this.keys?
-        if ( !otherKeySet.containsAll( myKeySet ) ) {
-            return false;
-        }
-
-        // element by element comparison.
-        if ( !mySnapshot.keySet().stream().noneMatch( ( k )
-                -> ( !mySnapshot.get( k ).equals( otherSnapShot.get( k ) ) ) ) ) {
-            return false;
-        }
-        return result;
+        return mySnapshot.equals( otherSnapShot );
     }
 
     /**
