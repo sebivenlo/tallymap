@@ -40,13 +40,13 @@ public class EnumTallyMapTest extends TallyMapTestBase<ABC> {
      * @return
      */
     @Override
-    protected TallyMap<ABC> createFromMap( Map<ABC, String> hm ) {
-        return new EnumTallyMap<>( ABC.class, hm.keySet() );
+    protected TallyMap<ABC> createFromMap( String name,Map<ABC, String> hm ) {
+        return new EnumTallyMap<>( ABC.class, hm.keySet() ).named(name);
     }
 
     @Override
-    protected TallyMap<ABC> createInstance( Collection<ABC> keys ) {
-        return new EnumTallyMap<>( ABC.class, keys );
+    protected TallyMap<ABC> createInstance(String name, Collection<ABC> keys ) {
+        return new EnumTallyMap<>( ABC.class, keys ).named( name);
 
     }
 

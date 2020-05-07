@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Tally map is a Thread safe concurrent map to count (tally) things. The Key
  * can be of any type suitable as a key in a Map.
  * <p>
- * 
+ *
  *
  * @param <K> Key type
  * @author hom
@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TallyMap1<K> implements TallyMap<K> {
 
     private final ConcurrentHashMap<K, AtomicLong> map;
+    private String name="this tallymap";
 
     /**
      * Set up TallyMap with keySet.
@@ -67,7 +68,7 @@ public class TallyMap1<K> implements TallyMap<K> {
      *
      * @param map to provide keySet
      */
-    public TallyMap1( Map<K,?> map ) {
+    public TallyMap1( Map<K, ?> map ) {
         this( map.keySet() );
     }
 
@@ -84,8 +85,8 @@ public class TallyMap1<K> implements TallyMap<K> {
     /**
      * Create a map with an empty set.
      */
-    public TallyMap1(){
-        this(new HashSet<>());
+    public TallyMap1() {
+        this( new HashSet<>() );
     }
 
     /**
@@ -112,7 +113,7 @@ public class TallyMap1<K> implements TallyMap<K> {
      * Trying to add to a non existing counter will add the counter and set it
      * to delta.
      *
-     * @param k     key
+     * @param k key
      * @param delta increment
      */
     @Override
@@ -195,4 +196,16 @@ public class TallyMap1<K> implements TallyMap<K> {
         }
         return result;
     }
+
+    @Override
+    public TallyMap1 named( String name ) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
 }

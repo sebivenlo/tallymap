@@ -36,15 +36,15 @@ public class ArrayTallyMapTest extends TallyMapTestBase<Integer> {
      * @return
      */
     @Override
-    protected TallyMap<Integer> createFromMap( Map<Integer, String> hm ) {
+    protected TallyMap<Integer> createFromMap( String name,Map<Integer, String> hm ) {
         return new ArrayTallyMap( hm.size() );
     }
 
     @Override
-    protected TallyMap<Integer> createInstance( Collection<Integer> keys ) {
+    protected TallyMap<Integer> createInstance( String name,Collection<Integer> keys ) {
         int maxMapped = keys.stream().max( ( a, b ) -> a.compareTo( b ) ).get()
                 .intValue();
-        return new ArrayTallyMap( maxMapped + 1, keys );
+        return new ArrayTallyMap( maxMapped + 1, keys ).named( name);
 
     }
 

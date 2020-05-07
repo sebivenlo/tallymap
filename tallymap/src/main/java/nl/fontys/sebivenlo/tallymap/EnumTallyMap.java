@@ -32,6 +32,7 @@ public class EnumTallyMap<K extends Enum<K>> implements TallyMap<K> {
 
     private final Class<K> keyType;
     private final EnumMap<K, LongAdder> map;
+    private String name="this tallymap";
 
     public EnumTallyMap( Class<K> keyType ) {
         this.keyType = keyType;
@@ -132,4 +133,17 @@ public class EnumTallyMap<K extends Enum<K>> implements TallyMap<K> {
 
     }
 
+
+    @Override
+    public EnumTallyMap named( String name ) {
+        this.name=name;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    
 }

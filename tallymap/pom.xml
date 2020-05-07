@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nl.fontys.sebivenlo</groupId>
     <artifactId>tallymap</artifactId>
-    <version>3.0</version>
+    <version>3.0.1</version>
     <packaging>jar</packaging>
      <parent>
         <groupId>nl.fontys.sebivenlo</groupId>

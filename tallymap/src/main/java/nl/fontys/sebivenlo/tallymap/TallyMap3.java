@@ -25,10 +25,9 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * Tally map is a Thread safe concurrent map to count (tally) things, using a
  * prefilled map of {@code <K,LongAdder>}. The Key can be of any type suitable
- * as a key
- * in a Map. This version is unforgiving when a key is used that is not already
- * mapped, but on the other hand can avoid tests to ensure such mapping, making
- * the tally operations faster.
+ * as a key in a Map. This version is unforgiving when a key is used that is not
+ * already mapped, but on the other hand can avoid tests to ensure such mapping,
+ * making the tally operations faster.
  * <p>
  * Typical usage is in tests.
  *
@@ -40,6 +39,7 @@ import java.util.concurrent.atomic.LongAdder;
 public class TallyMap3<K> implements TallyMap<K> {
 
     private final ConcurrentHashMap<K, LongAdder> map;
+    private String name="this tallymap";
 
     /**
      * Set up TallyMap with keySet.
@@ -118,7 +118,7 @@ public class TallyMap3<K> implements TallyMap<K> {
      * Trying to add to a non existing counter will result in a runtime
      * exception.
      *
-     * @param k     key
+     * @param k key
      * @param delta increment
      *
      * @throws NullPointerException when k not mapped.
@@ -154,7 +154,7 @@ public class TallyMap3<K> implements TallyMap<K> {
      * List of snapshots.
      */
     private List<Map<K, Long>> snapList
-                                       = new CopyOnWriteArrayList<Map<K, Long>>();
+            = new CopyOnWriteArrayList<Map<K, Long>>();
 
     /**
      * Take a snapshot and add it to the list.
@@ -192,4 +192,16 @@ public class TallyMap3<K> implements TallyMap<K> {
         return map.reduceValuesToLong( 1L, LongAdder::sum, 0L, Long::sum );
         //return map.values().stream().mapToLong( v -> v.longValue() ).sum();
     }
+
+    @Override
+    public TallyMap3 named( String name ) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
 }

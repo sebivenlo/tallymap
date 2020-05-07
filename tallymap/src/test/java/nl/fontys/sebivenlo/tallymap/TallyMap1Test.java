@@ -26,8 +26,8 @@ import org.junit.Test;
 public class TallyMap1Test extends TallyMapStringTestBase {
 
     @Override
-    protected TallyMap<String> createFromMap( Map<String, String> hm ) {
-        return new TallyMap1<>( hm );
+    protected TallyMap<String> createFromMap( String name,Map<String, String> hm ) {
+        return new TallyMap1<>( hm ).named( name);
     }
 
     /**
@@ -37,8 +37,8 @@ public class TallyMap1Test extends TallyMapStringTestBase {
      * @return the sut.
      */
     @Override
-    protected TallyMap<String> createInstance( Collection<String> keys ) {
-        return new TallyMap1<>( keys );
+    protected TallyMap<String> createInstance( String name, Collection<String> keys ) {
+        return new TallyMap1<>( keys ).named( name);
     }
 
     @Test

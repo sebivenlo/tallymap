@@ -24,34 +24,33 @@ import org.junit.Test;
  * @author Pieter van den Hombergh (p dot vandenhombergh at fontys dot nl)
  */
 public class TallyMap2Test extends TallyMapStringTestBase {
-
+    
     @Override
-    protected TallyMap<String> createFromMap(
-            Map<String, String> hm ) {
-        return new TallyMap2<String>( hm );
+    protected TallyMap<String> createFromMap( String name, Map<String, String> hm ) {
+        return new TallyMap2<String>( hm ).named( name );
     }
-
+    
     @Override
-    protected TallyMap<String> createInstance( Collection<String> keys ) {
-        return new TallyMap2<>( keys );
+    protected TallyMap<String> createInstance( String n, Collection<String> keys ) {
+        return new TallyMap2<>( keys ).named( n );
     }
-
+    
     @Test
     public void testCopyCTor() {
         TallyMap<String> map3 = new TallyMap2<>( testSet1() );
         TallyMap<String> map4 = new TallyMap2( map3 );//<>( map3 );
     }
-
+    
     @Test
     public void unmappedAddsKey() {
         map1.addTallyForKey( "Z", 7L );
         assertEquals( 7L, map1.getTallyForKey( "Z" ) );
     }
-
+    
     @Test
     public void defaultCtorEmpty() {
         TallyMap<String> map = new TallyMap2<>();
         assertEquals( 0L, map.grandTotal() );
     }
-
+    
 }

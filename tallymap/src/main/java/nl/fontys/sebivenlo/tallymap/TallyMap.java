@@ -101,7 +101,7 @@ public interface TallyMap<K> {
      * @param k the key
      */
     /**
-     * Increment a counter by key. 
+     * Increment a counter by key.
      *
      * @param k the key
      */
@@ -110,7 +110,7 @@ public interface TallyMap<K> {
     }
 
     /**
-     * Decrement a counter by key. 
+     * Decrement a counter by key.
      *
      * @param k the key
      */
@@ -146,11 +146,16 @@ public interface TallyMap<K> {
                     .entrySet()
                     .stream()
                     .forEach( e -> {
-                        result.append( "\n\tthis  " )
+                        result.append( "\n\t")
+                                .append( this.getName() )
+                                .append( " " )
                                 .append( e.getKey().toString() )
                                 .append( " => " )
                                 .append( e.getValue() )
-                                .append( ", other missing" );
+                                .append( ", " )
+                                .append( other.getName() )
+                                .append(
+                                " missing" );
 
                     } );
         }
@@ -160,21 +165,27 @@ public interface TallyMap<K> {
                     .entrySet()
                     .stream()
                     .forEach( e -> {
-                        result.append( "\n\tother " )
+                        result.append( "\n\t " )
+                                .append( other.getName())
+                                .append(" ")
                                 .append( e.getKey().toString() )
                                 .append( " => " )
                                 .append( e.getValue() )
-                                .append( ", this missing" );
+                                .append( ", ").append(this.getName()).append(" missing" );
 
                     } );
         }
 
-        if ( diffMap.containsKey( DiffType.UPDATE_KEY ) ) {
-            diffMap.get( DiffType.UPDATE_KEY )
+        if ( diffMap.containsKey( DiffType.UPDATE_VALUE ) ) {
+            diffMap.get( DiffType.UPDATE_VALUE )
                     .entrySet()
                     .stream()
                     .forEach( e -> {
-                        result.append( "\n\tother differs for key " )
+                        result.append( "\n\t")
+                                .append(other.getName())
+                                .append(" and ")
+                                .append(this.getName())
+                                .append(" differ for key " )
                                 .append( e.getKey() )
                                 .append( " by " )
                                 .append( e.getValue() );
@@ -199,7 +210,7 @@ public interface TallyMap<K> {
      *
      */
     public enum DiffType {
-        ADD_KEY, DELETE_KEY, UPDATE_KEY
+        ADD_KEY, DELETE_KEY, UPDATE_VALUE
     }
 
     /**
@@ -228,7 +239,7 @@ public interface TallyMap<K> {
         }
         Map<K, Long> updateMap = updateMap( otherSnapShot, mySnapShot );
         if ( !updateMap.isEmpty() ) {
-            result.put( DiffType.UPDATE_KEY, updateMap );
+            result.put( DiffType.UPDATE_VALUE, updateMap );
         }
         return result;
     }
@@ -334,6 +345,15 @@ public interface TallyMap<K> {
     default long get( K k ) {
         return getTallyForKey( k );
     }
-    
-    
+
+    /**
+     * Get this maps name. In tests, it helps making the diff output more
+     * meaningful.
+     *
+     * @return
+     */
+    String getName();
+
+    TallyMap named( String name );
+
 }

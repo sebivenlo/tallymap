@@ -24,30 +24,30 @@ import org.junit.Test;
  * @author Pieter van den Hombergh (p dot vandenhombergh at fontys dot nl)
  */
 public class TallyMap3Test extends TallyMapStringTestBase {
-
+    
     @Override
     //@Test( expected = NullPointerException.class )
     public void testUnknownKeyValue() {
         System.out.println( "not supported in this tallymap impl" );
         //super.testUnknownKeyValue(); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
-    protected TallyMap<String> createFromMap(
+    protected TallyMap<String> createFromMap( String n,
             Map<String, String> hm ) {
-        return new TallyMap3<>( hm );
+        return new TallyMap3<>( hm ).named( n );
     }
-
+    
     @Override
-    protected TallyMap<String> createInstance( Collection<String> keys ) {
-        return new TallyMap3<>( keys );
+    protected TallyMap<String> createInstance( String n, Collection<String> keys ) {
+        return new TallyMap3<>( keys ).named( n );
     }
-
+    
     @Test( expected = NullPointerException.class )
     public void unmappedAddThowsNPE() {
         map1.addTallyForKey( "Z", 1 );
     }
-
+    
     @Test
     public void testCopyCTor() {
         TallyMap<String> map3 = new TallyMap3<>( testSet1() );
@@ -58,11 +58,11 @@ public class TallyMap3Test extends TallyMapStringTestBase {
     // supperess test
     public void unmappedAddsKey() {
     }
-
+    
     @Test
     public void defaultCtorEmpty() {
         TallyMap<String> map = new TallyMap3<>();
         assertEquals( 0L, map.grandTotal() );
     }
-
+    
 }

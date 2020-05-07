@@ -29,9 +29,9 @@ import org.junit.Test;
  */
 public abstract class TallyMapTestBase<T> {
 
-    protected abstract TallyMap<T> createFromMap( Map<T, String> hm );
+    protected abstract TallyMap<T> createFromMap(  String name, Map<T, String> hm );
 
-    protected abstract TallyMap<T> createInstance( Collection<T> keys );
+    protected abstract TallyMap<T> createInstance( String name, Collection<T> keys );
 
     /**
      * Get a test value from a collection or array. The mapping between i and
@@ -58,8 +58,8 @@ public abstract class TallyMapTestBase<T> {
     public void setUp() {
         keys1 = testSet1();
         keys2 = testSet2();
-        map1 = createInstance( keys1 );
-        map2 = createInstance( keys1 );
+        map1 = createInstance( "map1", keys1 );
+        map2 = createInstance( "map1", keys1 );
     }
 
     @After
@@ -141,7 +141,7 @@ public abstract class TallyMapTestBase<T> {
     @Test
     public void testSnapshotEquals() {
         System.out.println( "snapshotEquals" );
-        TallyMap<T> other = createInstance( keys2 );
+        TallyMap<T> other = createInstance( "other", keys2 );
         boolean expResult = false;
         assertFalse( map1.snapShotEquals( other ) );
         assertFalse( other.snapShotEquals( map1 ) );
@@ -205,14 +205,14 @@ public abstract class TallyMapTestBase<T> {
         assertEquals( "equal maps ", 0, map2.snapShotDiff( map1 ).length() );
         T a = getTestValue( 0 );
         T b = getTestValue( 1 );
-        map2 = createInstance( keys2 );
+        map2 = createInstance( "map2", keys2 );
         map2.addTallyForKey( b, 3 );
         assertEquals( "same map ", 0, map1.snapShotDiff( map1 ).length() );
         System.out.println( "diff map1 and map2:" + map1.snapShotDiff( map2 ) );
         assertFalse( "other map12 ", 0 == map1.snapShotDiff( map2 ).length() );
         System.out.println( "diff map2 and map1:" + map2.snapShotDiff( map1 ) );
         assertFalse( "other map21 ", 0 == map2.snapShotDiff( map1 ).length() );
-        map2 = createInstance( keys2 );
+        map2 = createInstance( "map2", keys2 );
         map2.addTallyForKey( a, 2 );
         System.out.println( "diff map2 and map1:" + map2.snapShotDiff( map1 ) );
         assertFalse( "other map22 ", 0 == map2.snapShotDiff( map1 ).length() );
@@ -227,8 +227,8 @@ public abstract class TallyMapTestBase<T> {
         }
         T a = getTestValue( 0 );
 
-        TallyMap<T> tm1 = createFromMap( hm );
-        TallyMap<T> tm2 = createInstance( tm1.keySet() );
+        TallyMap<T> tm1 = createFromMap( "tm1", hm );
+        TallyMap<T> tm2 = createInstance( "tm2",tm1.keySet() );
         tm1.incrementForKey( a );
         tm2.incrementForKey( a );
         assertTrue( "maps tm1 and tm2 should be equal", tm1

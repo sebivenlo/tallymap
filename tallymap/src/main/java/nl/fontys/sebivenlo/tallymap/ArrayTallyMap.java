@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.LongAdder;
  */
 public class ArrayTallyMap implements TallyMap<Integer> {
 
+    private String name="this tallymap";
     private LongAdder[] map;
     private List<Map<Integer, Long>> snapList
             = new CopyOnWriteArrayList<>();
@@ -106,4 +107,12 @@ public class ArrayTallyMap implements TallyMap<Integer> {
         return TallyMap.asString( this );
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public ArrayTallyMap named( String name ) {
+        this.name = name;
+        return this;
+    }
 }

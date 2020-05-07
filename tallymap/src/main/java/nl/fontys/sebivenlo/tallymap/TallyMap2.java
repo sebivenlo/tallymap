@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.LongAdder;
 public class TallyMap2<K> implements TallyMap<K> {
 
     private final ConcurrentHashMap<K, LongAdder> map;
+    private String name="this tallymap";
 
     /**
      * Set up TallyMap with keySet.
@@ -115,7 +116,7 @@ public class TallyMap2<K> implements TallyMap<K> {
      * Trying to add to a non existing counter will add the counter and set it
      * to delta.
      *
-     * @param k     key
+     * @param k key
      * @param delta increment
      */
     public void addTallyForKey( K k, long delta ) {
@@ -146,7 +147,7 @@ public class TallyMap2<K> implements TallyMap<K> {
     }
 
     private List<Map<K, Long>> snapList
-                                       = new CopyOnWriteArrayList<Map<K, Long>>();
+            = new CopyOnWriteArrayList<Map<K, Long>>();
 
     /**
      * Take a snapshot and add it to the list.
@@ -186,5 +187,16 @@ public class TallyMap2<K> implements TallyMap<K> {
     public long grandTotal() {
         return map.reduceValuesToLong( 1L, LongAdder::sum, 0L, Long::sum );
     }
-    
+
+    @Override
+    public TallyMap2 named( String name ) {
+        this.name = name;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
 }
