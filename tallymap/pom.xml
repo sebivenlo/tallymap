@@ -11,6 +11,16 @@
         <version>2.3.8</version>
 	<relativePath/>
      </parent>
+     <distributionManagement>
+        <repository>
+            <id>fontysvenlo.org</id>
+            <url>scpexe://fontysvenlo.org/home/repository</url> 
+        </repository>
+        <site>
+            <id>javabits.fontysvenlo.org</id>
+            <url>scpexe://fontysvenlo.org/home/javabits/public_html/tallymap</url>
+        </site>
+    </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
